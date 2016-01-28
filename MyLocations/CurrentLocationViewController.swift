@@ -16,6 +16,12 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
   var updatingLocation = false
   var lastLocationError: NSError?
   
+  // CLGeocoder performs the geocoding and CLPlacemark contians the address, if there is one.
+  let geocoder = CLGeocoder()
+  var placemark: CLPlacemark?
+  var performingReverseGeocoding = false
+  var lastGeocodingError: NSError?
+  
   @IBOutlet weak var messageLabel: UILabel!
   @IBOutlet weak var latitudeLabel: UILabel!
   @IBOutlet weak var longitudeLabel: UILabel!
@@ -46,6 +52,8 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
     } else {
       location = nil
       lastLocationError = nil
+      placemark = nil
+      lastGeocodingError = nil
       startLocationManager()
     }
     
@@ -71,6 +79,14 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
       longitudeLabel.text = String(format: "%.8f", location.coordinate.longitude)
       tagButton.hidden = false
       messageLabel.text = ""
+      
+      if let placemark = placemark {
+        addressLabel.text = stringFromPlacemark(placemark)
+      } else if performingReverseGeocoding {
+        addressLabel.text = "Searching for Address..."
+      } else if lastGeocodingError != nil {
+        addressLabel.text = "No Address Found"
+      }
     
     } else {
       latitudeLabel.text = ""
@@ -120,6 +136,33 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
     } else {
       getButton.setTitle("Get My Location", forState: .Normal)
     }
+  }
+  
+  func stringFromPlacemark(placemark: CLPlacemark) -> String {
+    var line1 = ""
+    
+    if let s = placemark.subThoroughfare {
+      line1 += s + " "
+    }
+    
+    if let s = placemark.thoroughfare {
+      line1 += s
+    }
+    
+    var line2 = ""
+    
+    if let s = placemark.locality {
+      line2 += s + " "
+    }
+    
+    if let s = placemark.administrativeArea {
+      line2 += s + " "
+    }
+    if let s = placemark.postalCode {
+      line2 += s
+    }
+    
+    return line1 + "\n" + line2
   }
   
   override func viewDidLoad() {
@@ -177,10 +220,34 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
       configureGetButton()
     }
     
+    if !performingReverseGeocoding {
+      print("*** Going to geocode")
+      
+      performingReverseGeocoding = true
+      
+      // Clousure alert! This code will not run until geocoder has run.
+      // It is given to the geocoder object, but not run.
+      
+      geocoder.reverseGeocodeLocation(newLocation, completionHandler: {
+        placemarks, error in
+        print("** Found placemarks: \(placemarks), error: \(error)")
+        
+        self.lastGeocodingError = error
+        // "if there's no error and the unwrapped placemarks array is not empty, continue."
+        if error == nil, let p = placemarks where !p.isEmpty {
+          self.placemark = p.last
+        } else {
+          self.placemark = nil
+        }
+        
+        self.performingReverseGeocoding = false
+        self.updateLabels()
+        
+      })
+    
+    }
   }
-  
-  
-  
-  
-}
 
+
+
+}
