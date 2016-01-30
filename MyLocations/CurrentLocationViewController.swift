@@ -206,6 +206,12 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
       return
     }
     
+    var distance = CLLocationDistance(DBL_MAX)
+    if let location = location {
+      distance = newLocation.distanceFromLocation(location)
+      print("*** New location is \(distance) meters from the old location")
+    }
+    
     // Short circuiting example. If location is nil, the second condition isn't looked at, 
     // if it is not nil, then we can be sure it contains SOMETHING so force unwrap.
     if location == nil || location!.horizontalAccuracy > newLocation.horizontalAccuracy {
@@ -215,9 +221,13 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
     }
     
     if newLocation.horizontalAccuracy <= locationManager.desiredAccuracy {
-      print("** We're done!")
+      print("*** We're done!")
       stopLocationManager()
       configureGetButton()
+
+      if distance > 0 {
+      performingReverseGeocoding = false
+      }
     }
     
     if !performingReverseGeocoding {
@@ -230,7 +240,7 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
       
       geocoder.reverseGeocodeLocation(newLocation, completionHandler: {
         placemarks, error in
-        print("** Found placemarks: \(placemarks), error: \(error)")
+        //print("*** Found placemarks: \(placemarks), error: \(error)")
         
         self.lastGeocodingError = error
         // "if there's no error and the unwrapped placemarks array is not empty, continue."
@@ -242,12 +252,19 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
         
         self.performingReverseGeocoding = false
         self.updateLabels()
-        
-      })
-    
+        })
+      
+    } else if distance < 1.0 {
+      let timeInterval = newLocation.timestamp.timeIntervalSinceDate(location!.timestamp)
+      print("*** timeInterval is now \(timeInterval)")
+      if timeInterval > 10 {
+        print("*** Force done!")
+        stopLocationManager()
+        updateLabels()
+        configureGetButton()
+      }
     }
   }
-
 
 
 }
