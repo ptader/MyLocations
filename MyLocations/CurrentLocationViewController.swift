@@ -218,7 +218,7 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
       lastLocationError = nil
       location = newLocation
       updateLabels()
-    }
+    
     
     if newLocation.horizontalAccuracy <= locationManager.desiredAccuracy {
       print("*** We're done!")
@@ -253,7 +253,7 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
         self.performingReverseGeocoding = false
         self.updateLabels()
         })
-      
+      }
     } else if distance < 1.0 {
       let timeInterval = newLocation.timestamp.timeIntervalSinceDate(location!.timestamp)
       print("*** timeInterval is now \(timeInterval)")
