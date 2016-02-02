@@ -22,6 +22,8 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
   var performingReverseGeocoding = false
   var lastGeocodingError: NSError?
   
+  var timer: NSTimer?
+  
   @IBOutlet weak var messageLabel: UILabel!
   @IBOutlet weak var latitudeLabel: UILabel!
   @IBOutlet weak var longitudeLabel: UILabel!
@@ -119,14 +121,31 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
       locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
       locationManager.startUpdatingLocation()
       updatingLocation = true
+      // ...just so we don't run forever. "didTimeOut" is my method
+      timer = NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: Selector("didTimeOut"), userInfo: nil, repeats: false)
     }
   }
   
   func stopLocationManager() {
     if updatingLocation {
+      // Have to stop the time if it found a location.
+      if let timer = timer {
+        timer.invalidate()
+      }
       locationManager.stopUpdatingLocation()
       locationManager.delegate = nil
       updatingLocation = false
+    }
+  }
+  
+  func didTimeOut () {
+  print("*** Timed out.")
+  
+  if location == nil {
+    stopLocationManager()
+    lastLocationError = NSError(domain:"MyLocationsErrorDomain", code: 1, userInfo: nil)
+    updateLabels()
+    configureGetButton()
     }
   }
   
@@ -198,6 +217,7 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
     print("didUpdateLocations \(newLocation)")
     
     if newLocation.timestamp.timeIntervalSinceNow < -5 {
+      print("newLocation.timestamp is \(newLocation.timestamp.timeIntervalSinceNow)")
       return
     }
     
@@ -219,7 +239,6 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
       location = newLocation
       updateLabels()
     
-    
     if newLocation.horizontalAccuracy <= locationManager.desiredAccuracy {
       print("*** We're done!")
       stopLocationManager()
@@ -237,7 +256,7 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
       
       // Clousure alert! This code will not run until geocoder has run.
       // It is given to the geocoder object, but not run.
-      
+
       geocoder.reverseGeocodeLocation(newLocation, completionHandler: {
         placemarks, error in
         //print("*** Found placemarks: \(placemarks), error: \(error)")
