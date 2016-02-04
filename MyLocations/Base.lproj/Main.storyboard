@@ -281,6 +281,15 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="addressLabel" destination="azh-B9-ogq" id="Flc-9z-IMN"/>
+                        <outlet property="categoryLabel" destination="8Dj-P1-boP" id="BEL-ZJ-vir"/>
+                        <outlet property="dateLabel" destination="6vK-QW-WpQ" id="16B-t5-A5T"/>
+                        <outlet property="descriptionTextView" destination="TYr-g7-C6I" id="c3Q-5p-ssR"/>
+                        <outlet property="latitudeLabel" destination="6yn-Hp-C9z" id="cGG-L5-ijd"/>
+                        <outlet property="longitudeLabel" destination="2pT-C5-vig" id="EZz-tA-IS1"/>
+                        <outlet property="view" destination="3ec-33-gah" id="IWl-CA-zrH"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PHW-z0-yJM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
