@@ -15,7 +15,6 @@ private let dateFormatter: NSDateFormatter = {
   let formatter = NSDateFormatter()
   formatter.dateStyle = .MediumStyle
   formatter.timeStyle = .ShortStyle
-  print("*** Created a dateFormatter object.")
   return formatter
 }()
 
@@ -54,6 +53,23 @@ class LocationDetailsViewController: UITableViewController {
     }
     
     dateLabel.text = formatDate(NSDate())
+  }
+  
+  // MARK: - UITableViewDelegate
+  override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    
+    if indexPath.section == 0 && indexPath.row == 0 {
+      return 88
+
+    } else if indexPath.section == 2 && indexPath.row == 2 {
+      addressLabel.frame.size = CGSize(width: view.bounds.size.width - 115, height: 10000)
+      addressLabel.sizeToFit()
+      addressLabel.frame.origin.x = view.bounds.size.width - 15
+      return addressLabel.frame.size.height + 20
+    
+    } else {
+      return 44
+    }
   }
   
   func formatDate(date: NSDate) -> String {
