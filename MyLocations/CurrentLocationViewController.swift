@@ -193,6 +193,15 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
   }
+  
+  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    if segue.identifier == "TagLocation"{
+      let navigationController = segue.destinationViewController as! UINavigationController
+      let controller = navigationController.topViewController as! LocationDetailsViewController
+      controller.coordinate = location!.coordinate
+      controller.placemark = placemark
+    }
+  }
 
   //MARK: - CLLocatioManagerDelegate
   // delegate methods for location manager
