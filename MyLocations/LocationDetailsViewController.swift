@@ -38,6 +38,7 @@ class LocationDetailsViewController: UITableViewController {
     dismissViewControllerAnimated(true, completion: nil)
   }
   
+  // An "unwind action"
   @IBAction func categoryPickerDidPickCategory(segue: UIStoryboardSegue){
     let controller = segue.sourceViewController as! CategoryPickerViewController
     categoryName = controller.selectedCategoryName

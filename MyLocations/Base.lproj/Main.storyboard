@@ -323,7 +323,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="8Pe-v9-N3t" kind="unwind" unwindAction="categoryPickerDidPickCategory:" id="kqz-B0-Okt"/>
+                                    <segue destination="8Pe-v9-N3t" kind="unwind" identifier="PickedCategory" unwindAction="categoryPickerDidPickCategory:" id="kqz-B0-Okt"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
