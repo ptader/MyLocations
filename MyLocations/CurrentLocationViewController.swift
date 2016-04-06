@@ -122,7 +122,7 @@ class CurrentLocationViewController: UIViewController, CLLocationManagerDelegate
       locationManager.startUpdatingLocation()
       updatingLocation = true
       // ...just so we don't run forever. "didTimeOut" is my method
-      timer = NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: Selector("didTimeOut"), userInfo: nil, repeats: false)
+      timer = NSTimer.scheduledTimerWithTimeInterval(60, target: self, selector: #selector(CurrentLocationViewController.didTimeOut), userInfo: nil, repeats: false)
     }
   }
   
